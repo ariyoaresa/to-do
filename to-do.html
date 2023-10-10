@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>To-Do List</title>
+	<style>
+	    body {
+	font-family: sans-serif;
+	background-color: #f8f8f8;
+}
+
+.container {
+	margin: auto;
+	width: 80%;
+	max-width: 800px;
+}
+
+h1 {
+	text-align: center;
+	color: #333;
+}
+
+form {
+	display: flex;
+	margin-bottom: 20px;
+}
+
+input[type="text"] {
+	flex: 1;
+	padding: 10px;
+	border-radius: 5px 0 0 5px;
+	border: none;
+}
+
+button[type="submit"] {
+	padding: 10px 20px;
+	border: none;
+	background-color: #333;
+	color: #fff;
+	border-radius: 0 5px 5px 0;
+	cursor: pointer;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+}
+
+li {
+	padding: 10px;
+	margin-bottom: 5px;
+	background-color: #fff;
+	border-radius: 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+li span {
+	flex: 1;
+}
+
+li button {
+	background-color: #dc3545;
+	color: #fff;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>To-Do List</h1>
+		<form id="task-form">
+			<input type="text" id="task-input" placeholder="Add task...">
+			<button type="submit">Add</button>
+		</form>
+		<ul id="task-list"></ul>
+		<button id="clear-btn">Clear All</button>
+	</div>
+
+	<script>
+// Get the form and task list elements
+const form = document.querySelector('#task-form');
+const taskList = document.querySelector('#task-list');
+
+// Initialize tasks array with any existing tasks from local storage
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+// Render tasks from array to the task list
+function renderTasks() {
+  taskList.innerHTML = '';
+  tasks.forEach(function(task) {
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    const button = document.createElement('button');
+    span.textContent = task;
+    button.textContent = 'Remove';
+    li.appendChild(span);
+    li.appendChild(button);
+    taskList.appendChild(li);
+  });
+}
+
+// Add event listener to form submit button
+form.addEventListener('submit', function(event) {
+  // Prevent the form from submitting
+  event.preventDefault();
+
+  // Get the input value
+  const input = document.querySelector('#task-input');
+  const taskText = input.value;
+
+  // Add new task to array and local storage
+  tasks.push(taskText);
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+
+  // Render tasks to the task list
+  renderTasks();
+
+  // Clear the input field
+  input.value = '';
+});
+
+// Add event listener to task list to handle remove button clicks
+taskList.addEventListener('click', function(event) {
+  if (event.target.tagName === 'BUTTON') {
+    const li = event.target.parentElement;
+    const taskIndex = Array.from(taskList.children).indexOf(li);
+    tasks.splice(taskIndex, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    renderTasks();
+  }
+});
+
+// Add event listener to clear button to clear all tasks
+const clearButton = document.querySelector('#clear-btn');
+clearButton.addEventListener('click', function() {
+  tasks = [];
+  localStorage.removeItem('tasks');
+  renderTasks();
+});
+
+// Render tasks on page load
+renderTasks();
+
+	</script>
+</body>
+</html>
